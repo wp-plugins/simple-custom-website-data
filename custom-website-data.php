@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom Website Data
 Plugin URI: http://dev.dannyweeks.com/cwd
-Version: 1.0
+Version: 1.1
 Author: Danny Weeks
 Author URI: http://dannyweeks.com/
 Description: Allows user to add custom data to be used as either returned values or as shortcodes
@@ -27,6 +27,8 @@ class CustomWebsiteData
             session_start();
             $_SESSION['cwd_started'] = true;
         }
+
+
     }
 
     protected function newInstallMsg(){
@@ -62,7 +64,7 @@ class CustomWebsiteData
     //menu and admin page
 
     public function register_my_custom_menu_page(){
-        add_menu_page( 'Custom Website Data', 'Custom Data', 'manage_options', 'cwd-management', array($this, 'cwd_management_page'), plugins_url( 'custom-website-data/img/cwd.png' ), 28 );
+        add_menu_page( 'Custom Website Data', 'Custom Data', 'manage_options', 'cwd-management', array($this, 'cwd_management_page'), plugins_url( 'simple-custom-website-data/img/cwd.png' ), 28 );
     }
 
     public function cwd_management_page(){
@@ -174,22 +176,47 @@ class CustomWebsiteData
     public function processUserRequest(){
         $cwd_id = $this->idHandler();
         if (isset($_POST['ref']) && isset($_POST['data']) && $_POST['cwdaction'] == 'add') {
-            $this->insertData($_POST['ref'], $_POST['data']);
-            $this->setMessage('The record "' . $_POST['ref'] . '" has been added') ;
+
+            if (!wp_verify_nonce('add_action', $_REQUEST['smp_add_action'] ) ) {
+
+                $this->insertData($this->xss_filter($_POST['ref']), $this->xss_filter($_POST['data']));
+                $this->setMessage('The record "' . $_POST['ref'] . '" has been added') ;
+            }
+            else
+            {
+                $this->setMessage('Security Warning: The record was <strong>NOT</strong> added') ;
+            }
+
         }
         elseif($_GET['del'] == 'y' && $cwd_id){
-            $this->deleteRecord($cwd_id);
+
+            $this->deleteRecord($this->xss_filter($cwd_id));
             $this->setMessage('The record has been deleted') ;
 
         }
         elseif($_POST['edit'] == 'y' && $cwd_id){
-            $this->updateRecord($_POST['id'], $_POST['data']);
-            $this->setMessage('The record was updated');
+
+
+
+            if (!wp_verify_nonce('add_action', $_REQUEST['smp_add_action'] ) ) {
+
+                $this->updateRecord($_POST['id'], $this->xss_filter($_POST['data']));
+                $this->setMessage('The record was updated');
+            }
+            else
+            {
+                $this->setMessage('Security Warning: The record was <strong>NOT</strong> edited') ;
+            }
         }
     }
 
 
     // Utility
+
+    private function xss_filter($string)
+    {
+        return strip_tags(htmlentities($string));
+    }
 
     public function processData($data){
         if (is_array($data)) {
