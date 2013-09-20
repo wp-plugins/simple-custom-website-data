@@ -35,7 +35,7 @@ Installation of Custom Website Data is simple.
 
 e.g.
 
-1. Upload `custom-website-data` to the `/wp-content/plugins/` directory or upload the .zip to in your Wordpress admin area.
+1. Upload `simple-custom-website-data` to the `/wp-content/plugins/` directory or upload the .zip to in your Wordpress admin area.
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Go to the "Custom Data" tab in your admin menu
 
@@ -60,10 +60,17 @@ You can find these screenshots in the /assets/ directory of CWD
 
 == Changelog ==
 
+= 1.1 =
+* Fixed security issues.
+* Updated folder name to 'simple-custom-website-data' and documentation to match.
+
 = 1.0 =
 * N/A for version 1.0.
 
 == Upgrade Notice ==
+
+= 1.1 =
+N/A for version 1.1.
 
 = 1.0 =
 N/A for version 1.0.

@@ -20,5 +20,6 @@ if ($this->isJson($data)) {
 <input type="hidden" name="cwdaction" value="edit">
 <input type="hidden" name="edit" value="y">
 <input type="hidden" name="id" value="<?php echo $_GET['id']?>">
+<?php wp_nonce_field('edit_action', 'smp_edit_action') ?>
 <input class="button button-primary" type="submit" value="Edit">
 </form>
