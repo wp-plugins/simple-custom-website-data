@@ -37,6 +37,17 @@
     <code>&lt;?php  cwd_getThe($reference) ?&gt;</code><br>
     The "getThe" function can be used in place of <code>&lt;?php do_shortcode('[cwd ref="phone"]') ?&gt;</code> simply using <code>&lt;?php  cwd_getThe('phone') ?&gt;</code> will yield the same results.
     </p>
+    <h4>Write to record using PHP</h4>
+    <p>To update a record via PHP you can use the update function:</p>
+    <code>&lt;?php cwd_updateThe($reference, $data) ?&gt;</code>
+    <p><code>$reference</code> being the reference of the record you wish to change and <code>$data</code> being the data you want to be added to the record.</p>
+    <p>Both of these parameters are required. <code>$data</code> can be one of the following formats:</p>
+    <ul class="ul-list">
+        <li>String</li>
+        <li>Numeric</li>
+        <li>Array</li>
+    </ul>
+    <p>The function will return true on success and false if the reference does not exist or the data type is not one of the above. </p>
 
     <br>
     <br>

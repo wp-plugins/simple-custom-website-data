@@ -3,7 +3,7 @@ Contributors: DannyWeeks
 Donate link: http://dannyweeks.com/contact-me
 Tags: information, data, storage, business details, developer tools, contact, details, phone, email, address, global, info
 Requires at least: 3.5.2
-Tested up to: 3.6
+Tested up to: 3.6.1
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -59,6 +59,11 @@ You can find these screenshots in the /assets/ directory of CWD
 5. finished.png         - Example of how that shortcode works.
 
 == Changelog ==
+
+= 1.2 =
+* Added advanced function `cwd_updateThe()` for writing to a record via PHP
+* Updated user guide to reflect changes
+* CSS change to hide wp footer
 
 = 1.1 =
 * Fixed security issues.

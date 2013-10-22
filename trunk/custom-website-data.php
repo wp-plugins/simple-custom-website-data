@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom Website Data
 Plugin URI: http://dev.dannyweeks.com/cwd
-Version: 1.1
+Version: 1.2
 Author: Danny Weeks
 Author URI: http://dannyweeks.com/
 Description: Allows user to add custom data to be used as either returned values or as shortcodes
@@ -73,7 +73,7 @@ class CustomWebsiteData
 
     //create shortcodes
 
-    function cwd_func($atts){
+    public function cwd_func($atts){
         extract(shortcode_atts(array(
           'ref' => null,
        ), $atts));
@@ -175,37 +175,34 @@ class CustomWebsiteData
 
     public function processUserRequest(){
         $cwd_id = $this->idHandler();
+
+        // Add Record
         if (isset($_POST['ref']) && isset($_POST['data']) && $_POST['cwdaction'] == 'add') {
 
-            if (!wp_verify_nonce('add_action', $_REQUEST['smp_add_action'] ) ) {
+            if ( !empty($_POST) && check_admin_referer('cwd_add_action','cwd_add_name') ) {
 
                 $this->insertData($this->xss_filter($_POST['ref']), $this->xss_filter($_POST['data']));
                 $this->setMessage('The record "' . $_POST['ref'] . '" has been added') ;
             }
-            else
-            {
-                $this->setMessage('Security Warning: The record was <strong>NOT</strong> added') ;
-            }
 
         }
+
+        // Delete Record
+
         elseif($_GET['del'] == 'y' && $cwd_id){
 
             $this->deleteRecord($this->xss_filter($cwd_id));
             $this->setMessage('The record has been deleted') ;
 
         }
+
+        // Edit Record
         elseif($_POST['edit'] == 'y' && $cwd_id){
 
-
-
-            if (!wp_verify_nonce('add_action', $_REQUEST['smp_add_action'] ) ) {
+            if ( !empty($_POST) && check_admin_referer('cwd_edit_action','cwd_edit_name') ) {
 
                 $this->updateRecord($_POST['id'], $this->xss_filter($_POST['data']));
                 $this->setMessage('The record was updated');
-            }
-            else
-            {
-                $this->setMessage('Security Warning: The record was <strong>NOT</strong> edited') ;
             }
         }
     }
@@ -213,7 +210,7 @@ class CustomWebsiteData
 
     // Utility
 
-    private function xss_filter($string)
+    public function xss_filter($string)
     {
         return strip_tags(htmlentities($string));
     }
@@ -282,6 +279,24 @@ class CustomWebsiteData
 
         return $row;
     }
+
+    public function getRecordIdByRef($ref)
+    {
+        global $wpdb;
+        $table_name = $wpdb->prefix . $this->tablename;
+        $row = $wpdb->get_row(
+            $wpdb->prepare(
+            "
+                SELECT id
+                FROM $table_name
+                WHERE ref = %s
+            ",
+            $ref
+                    )
+            );
+        return $row->id;
+    }
+
     public function retRecord($ref){
         global $wpdb;
         $table_name = $wpdb->prefix . $this->tablename;
@@ -296,7 +311,7 @@ class CustomWebsiteData
                     )
             );
 
-        return $row;
+        return (count($row) > 0)? $row : false;
     }
 
     public function isJson($string) {
@@ -361,8 +376,38 @@ class CustomWebsiteData
 $cwd = new CustomWebsiteData;
 
 
-//Advanced Function
+//Advanced Functions
+
 function cwd_getThe($ref = null){
     global $cwd;
     return $cwd->processOutput($ref);
+}
+
+function cwd_updateThe($ref, $data){
+    global $cwd;
+    if ($cwd->retRecord($ref)) {
+
+        if (is_array($data)) {
+            $filtered_data = array();
+            foreach ($data as $key => $value) {
+                $filtered_data[$key] = $cwd->xss_filter($value);
+            }
+            $cwd->updateRecord($cwd->getRecordIdByRef($ref), $filtered_data);
+            return true;
+        }
+        elseif(is_string($data) || is_numeric($data)){
+            $cwd->updateRecord($cwd->getRecordIdByRef($ref), $data);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+
+    }
+    else
+    {
+        return false;
+    }
+
 }
