@@ -104,3 +104,12 @@ h2 span.subtitle{
 .plugin-info a{
     color: #AAAAAA;
 }
+
+.ul-list{
+    list-style: disc inside none;
+}
+
+/*Footer Hack*/
+#wpfooter{
+    display: none;
+}
