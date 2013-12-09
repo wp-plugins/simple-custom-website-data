@@ -3,7 +3,7 @@ Contributors: DannyWeeks
 Donate link: http://dannyweeks.com/contact-me
 Tags: information, data, storage, business details, developer tools, contact, details, phone, email, address, global, info
 Requires at least: 3.5.2
-Tested up to: 3.6.1
+Tested up to: 3.7.1
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -22,10 +22,10 @@ Key Features:
 *   Data stored in your Wordpress database for security and quick access.
 *   Shortcode works instantly with your data with not need for additional settings.
 *   Developers can use the PHP function provided to access the data quickly and simply.
+*   Import and export data using using csv.
 
 Future Features:
 
-*   Import and export data using using csv.
 *   Implement AJAX submissions for quicker manipulation and better UX
 *   Opt in anonymous usage tracking
 
