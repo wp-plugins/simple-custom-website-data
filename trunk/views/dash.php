@@ -1,6 +1,8 @@
 <?php global $cwd?>
 <h3 class="page-title">Dashboard</h3>
-<a class="actionbtn" href="<?php echo site_url();?>/wp-admin/admin.php?page=cwd-management&view=add">Add New</a> <a class="actionbtn" href="<?php echo site_url();?>/wp-admin/admin.php?page=cwd-management&view=user">User Guide</a>
+<a class="actionbtn" href="<?php echo site_url();?>/wp-admin/admin.php?page=cwd-management&view=add">Add New</a>
+<a class="actionbtn" href="<?php echo site_url();?>/wp-admin/admin.php?page=cwd-management&view=utility">Utility</a>
+<a class="actionbtn" href="<?php echo site_url();?>/wp-admin/admin.php?page=cwd-management&view=user">User Guide</a>
     <?php if(isset($message)):?>
     <div id="message" class="updated below-h2">
         <p><?php echo $message?></p>

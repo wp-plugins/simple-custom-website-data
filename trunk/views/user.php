@@ -48,7 +48,18 @@
         <li>Array</li>
     </ul>
     <p>The function will return true on success and false if the reference does not exist or the data type is not one of the above. </p>
-
+    <h3>Utility Options</h3>
+    <p>The backup and import facility revolves around the use of CSV (Comma Seperated Value) files.</p>
+    <p>Backing up all your records promps you to download a CSV file which will contain all of your records. This can be used to import at a later date and can be used on any website using CWD.</p>
+    <p>Importing allows you to quickly bulk add data whether it be new data or a backup after losing your data.
+    </p>
+    <p>The CSV files must be formatted as follows:</p>
+    <code>my_ref, my_data</code><br>
+    <p>Please note the following restrictions:</p>
+    <ul class="ul-list">
+        <li>Only CSV files can be used to import data</li>
+        <li>If a record reference already exists it will not be overwritten - you would need to manually delete that record first</li>
+    </ul>
     <br>
     <br>
     <a class="actionbtn" href="<?php echo site_url();?>/wp-admin/admin.php?page=cwd-management">Dashboard</a>

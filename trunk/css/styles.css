@@ -1,5 +1,13 @@
+li{
+    margin-bottom: 14px;
+}
+
 h2 span.subtitle{
     font-size: 0.6em;
+}
+
+[type="file"]{
+    cursor: pointer;
 }
 
 #box-table {
@@ -109,7 +117,13 @@ h2 span.subtitle{
     list-style: disc inside none;
 }
 
+
+#adminmenu .wp-menu-image img {
+    opacity: 1;
+    }
+
 /*Footer Hack*/
 #wpfooter{
     display: none;
 }
+
