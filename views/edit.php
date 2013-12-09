@@ -9,6 +9,7 @@ if ($this->isJson($data)) {
     $arr_count = count($data_arr);
     foreach ($data_arr as $key => $value) {
         $processed .= $key . '=' . $value;
+        $processed .= "\r\n";
         $loop++;
     }
     $data = $processed;
@@ -20,6 +21,6 @@ if ($this->isJson($data)) {
 <input type="hidden" name="cwdaction" value="edit">
 <input type="hidden" name="edit" value="y">
 <input type="hidden" name="id" value="<?php echo $_GET['id']?>">
-<?php wp_nonce_field('cwd_edit_action', 'cwd_edit_name') ?>
+<input type="hidden" name="_edit_rec" value="<?php echo wp_create_nonce( 'edit_rec-' .  $_GET['id']);?>">
 <input class="button button-primary" type="submit" value="Edit">
 </form>

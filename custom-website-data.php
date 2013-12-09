@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom Website Data
 Plugin URI: http://dev.dannyweeks.com/cwd
-Version: 1.2
+Version: 1.3
 Author: Danny Weeks
 Author URI: http://dannyweeks.com/
 Description: Allows user to add custom data to be used as either returned values or as shortcodes
@@ -26,6 +26,25 @@ class CustomWebsiteData
         if( !session_id() && function_exists('session_start')){
             session_start();
             $_SESSION['cwd_started'] = true;
+        }
+
+        if($_GET['export'] == true && $_GET['page'] == 'cwd-management' && is_admin())
+        {
+            $csv = '';
+            foreach ($this->getAll() as $row) {
+                $csv .=  $row->ref . "," . $row->data . "\n";
+            }
+
+            header("Pragma: public");
+            header("Expires: 0");
+            header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+            header("Cache-Control: private", false);
+            header("Content-Type: application/octet-stream");
+            header("Content-Disposition: attachment; filename=\"cwd-export_" . date("Y-m-d_H-i-s") . ".csv\";" );
+            header("Content-Transfer-Encoding: binary");
+
+            echo $csv;
+            exit;
         }
 
 
@@ -64,7 +83,7 @@ class CustomWebsiteData
     //menu and admin page
 
     public function register_my_custom_menu_page(){
-        add_menu_page( 'Custom Website Data', 'Custom Data', 'manage_options', 'cwd-management', array($this, 'cwd_management_page'), plugins_url( 'simple-custom-website-data/img/cwd.png' ), 28 );
+        add_menu_page( 'Custom Website Data', 'Custom Data', 'manage_options', 'cwd-management', array($this, 'cwd_management_page'), plugins_url( ($_GET['page'] !== 'cwd-management')?'simple-custom-website-data/img/cwd.png' : 'simple-custom-website-data/img/active_cwd.png' ), 28 );
     }
 
     public function cwd_management_page(){
@@ -107,6 +126,18 @@ class CustomWebsiteData
                 require 'views/user.php';
                 break;
 
+            case 'utility':
+                require 'views/utility.php';
+                break;
+
+            case 'import':
+                require 'views/import.php';
+                break;
+
+            case 'import_proc':
+                require 'views/import_proc.php';
+                break;
+
             default:
                 $this->newInstallMsg();
                 require 'views/dash.php';
@@ -116,10 +147,12 @@ class CustomWebsiteData
 
     //data manipulation
 
-    public function insertData($ref,$data){
+    public function insertData($ref, $data, $skip_proc = false){
         global $wpdb;
 
-        $data = $this->processData($data);
+        if (!$skip_proc) {
+            $data = $this->processData($data);
+        }
 
         $table_name = $wpdb->prefix . $this->tablename;
         $wpdb->query(
@@ -190,25 +223,37 @@ class CustomWebsiteData
         // Delete Record
 
         elseif($_GET['del'] == 'y' && $cwd_id){
+            if (wp_verify_nonce( $_GET['_del_rec'], 'del_rec-' .  $_GET['id'])) {
+                $this->deleteRecord($this->xss_filter($cwd_id));
+                $this->setMessage('The record has been deleted') ;
+            }
+            else
+            {
+                $this->setMessage('Securty check failed');
+            }
 
-            $this->deleteRecord($this->xss_filter($cwd_id));
-            $this->setMessage('The record has been deleted') ;
 
         }
 
         // Edit Record
         elseif($_POST['edit'] == 'y' && $cwd_id){
-
-            if ( !empty($_POST) && check_admin_referer('cwd_edit_action','cwd_edit_name') ) {
-
+            if (wp_verify_nonce( $_POST['_edit_rec'], 'edit_rec-' .  $_POST['id']))
+            {
                 $this->updateRecord($_POST['id'], $this->xss_filter($_POST['data']));
                 $this->setMessage('The record was updated');
             }
+            else
+            {
+                $this->setMessage('Securty check failed');
+            }
+
         }
     }
 
 
     // Utility
+
+
 
     public function xss_filter($string)
     {
@@ -224,11 +269,13 @@ class CustomWebsiteData
         }
         elseif(strstr($data, "\n") && strstr($data, '=')){
             $retArr = array();
-            $data = str_replace("\n", '|', $data);
+            $data = str_replace(array("\r", "\n"), '|', $data);
             $exploded = explode('|', $data);
             foreach ($exploded as $entry => $value) {
                 $single_ex = explode('=', $value);
-                $retArr[$single_ex[0]] = $single_ex[1];
+                if (!empty($single_ex[0])) {
+                    $retArr[$single_ex[0]] = $single_ex[1];
+                }
             }
             return json_encode($retArr);
         }
