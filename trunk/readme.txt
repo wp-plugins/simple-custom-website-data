@@ -60,6 +60,10 @@ You can find these screenshots in the /assets/ directory of CWD
 
 == Changelog ==
 
+= 1.3.1 =
+
+* Minor changes
+
 = 1.3 =
 * Added ability to export all records to csv file
 * Added ability to import csv file of records - if a reference already exists it will be skipped during the import process
