@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom Website Data
 Plugin URI: http://dev.dannyweeks.com/cwd
-Version: 1.3
+Version: 1.3.1
 Author: Danny Weeks
 Author URI: http://dannyweeks.com/
 Description: Allows user to add custom data to be used as either returned values or as shortcodes
