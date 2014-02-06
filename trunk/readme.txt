@@ -60,6 +60,10 @@ You can find these screenshots in the /assets/ directory of CWD
 
 == Changelog ==
 
+= 1.3.2 =
+
+* Fixed bug with isJson function return true if var is numeric
+
 = 1.3.1.1 =
 
 * Updated information
