@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom Website Data
 Plugin URI: http://dev.dannyweeks.com/cwd/index.php
-Version: 1.3.1.1
+Version: 1.3.2
 Author: Danny Weeks
 Author URI: http://dannyweeks.com/
 Description: Allows user to add custom data to be used as either returned values or as shortcodes
@@ -362,8 +362,11 @@ class CustomWebsiteData
     }
 
     public function isJson($string) {
-        json_decode($string);
-        return (json_last_error() == JSON_ERROR_NONE);
+        if (!is_numeric($string)) {
+            json_decode($string);
+            return (json_last_error() == JSON_ERROR_NONE);
+        }
+        return false;
     }
 
     public function getById($id){
