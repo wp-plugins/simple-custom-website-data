@@ -35,12 +35,31 @@
                 <td><?php echo $record['ref'];?></td>
 
                     <?php  if(!is_array($record['data'])):?>
-                        <td>
-                            <?php echo '<span class="select">[cwd ref="' . $record['ref'] . '"]</span>';?>
-                        </td>
-                        <td>
-                            <?php echo $record['data']; ?>
-                        </td>
+
+
+                        <?php
+                        $data = stripslashes($record['data']);
+                        if ($this->isJson($data)):?>
+                            <?php $data = cwd_objectToArray(json_decode($data)); ?>
+                            <td>
+                                <span class="arraydata">The data stored is an array.<br>
+                        Refer to the <a href="<?php echo site_url();?>/wp-admin/admin.php?page=cwd-management&view=user">user guide</a> for help.</span>
+                            </td>
+                            <td>
+                                <pre>
+                                <?php print_r($data); ?>
+                                </pre>
+                            </td>
+                        <?php else: ?>
+                            <td>
+                                <?php echo '<span class="select">[cwd ref="' . $record['ref'] . '"]</span>';?>
+                            </td>
+                            <td>
+                                <?php echo $data; ?>
+                            </td>
+                        <?php endif; ?>
+
+
                     <?php else:?>
                     <td>
                         <span class="arraydata">The data stored is an array.<br>
