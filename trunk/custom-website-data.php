@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom Website Data
 Plugin URI: http://dev.dannyweeks.com/cwd/index.php
-Version: 1.3.2
+Version: 1.4
 Author: Danny Weeks
 Author URI: http://dannyweeks.com/
 Description: Allows user to add custom data to be used as either returned values or as shortcodes
@@ -253,10 +253,12 @@ class CustomWebsiteData
 
     // Utility
 
-
-
     public function xss_filter($string)
     {
+        if($this->isJson(stripslashes($string)))
+        {
+            return strip_tags($string);
+        }
         return strip_tags(htmlentities($string));
     }
 
@@ -288,6 +290,10 @@ class CustomWebsiteData
         $data = $this->retRecord($ref)->data;
         if ($this->isJson($data)) {
             return json_decode($data, true);
+        }
+        elseif($this->isJson(stripcslashes($data)))
+        {
+            return json_decode(stripcslashes($data), true);
         }elseif(!is_null($data)){
             return $data;
         }else{
@@ -366,6 +372,16 @@ class CustomWebsiteData
             json_decode($string);
             return (json_last_error() == JSON_ERROR_NONE);
         }
+        return false;
+    }
+
+    public function isMulti($a, $json = null) {
+        if($json == true)
+        {
+            $a = cwd_objectToArray(json_decode($a));
+        }
+        $rv = array_filter($a,'is_array');
+        if(count($rv)>0) return true;
         return false;
     }
 
@@ -460,4 +476,10 @@ function cwd_updateThe($ref, $data){
         return false;
     }
 
+}
+
+function cwd_objectToArray($obj) {
+  if(!is_array($obj) && !is_object($obj)) return $obj;
+  if(is_object($obj)) $obj = get_object_vars($obj);
+  return array_map(__FUNCTION__, $obj);
 }

@@ -1,4 +1,4 @@
-<h3 class="page-title">User Guide</h3>
+<h2 class="page-title">User Guide</h2>
 <div class="cwd-container">
     <h3>When and Why Use CWD (Custom Website Data)</h3>
     <p>CWD allows you to simply store and retrive data quickly and easily for your own use. Example applications of this could be to save your websites contact email address and phone number. Storing them using CWD you can then output them using the simple shortcodes throughout your website; if something changes, no problem just update it in one place and you are good to go.</p>
@@ -22,8 +22,8 @@
         <code>&lt;?php  echo do_shortcode('[cwd ref="phone"]') ?&gt;</code>
     </p>
     <h4>Storing An Array</h4>
-
-    <p>To store an array use the following syntax:</p>
+    <p>You can store arrays either by using the below simplified syntax or using json. Using json allows for the storage of multidimensional arrays.</p>
+    <p>To store a simple array use the following syntax:</p>
     <ul>
         <li>Seperate keys and values with the equals sign (=).</li>
         <li>Each item on a new line</li>
@@ -32,6 +32,8 @@
     <code>
     key1=value1 <br> key2=value2
     </code>
+    <h4>Multidimensional</h4>
+    <p>Use json to store multidimensional arrays. </p>
     <h4>Retriveing data without shortcode</h4>
     <p>You can use a function to retrive your custom data, this is particulary useful when accessing an array as the shortcode will not work. This can be done by using the CWD php function below:<br>
     <code>&lt;?php  cwd_getThe($reference) ?&gt;</code><br>

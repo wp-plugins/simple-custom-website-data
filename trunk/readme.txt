@@ -3,7 +3,7 @@ Contributors: DannyWeeks
 Donate link: http://dannyweeks.com/contact
 Tags: information, data, storage, business details, developer tools, contact, details, phone, email, address, global, info
 Requires at least: 3.5.2
-Tested up to: 3.8.1
+Tested up to: 3.9
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -59,6 +59,10 @@ You can find these screenshots in the /assets/ directory of CWD
 5. finished.png         - Example of how that shortcode works.
 
 == Changelog ==
+
+= 1.4 =
+
+* Added ability to store and retrieve multidimensional array
 
 = 1.3.2 =
 

@@ -1,19 +1,24 @@
 <a class="actionbtn" href="<?php echo site_url();?>/wp-admin/admin.php?page=cwd-management">Cancel</a>
 <?php
 $current = $this->getById($_GET['id']);
-$data = $current->data;
-if ($this->isJson($data)) {
+// var_dump($current);
+// die();
+
+$data = stripslashes($current->data);
+if ($this->isJson($data) && !$this->isMulti($data, true))
+{
     $processed = '';
     $data_arr = json_decode($data);
-    $loop = 0;
+    $loop = 1;
     $arr_count = count($data_arr);
     foreach ($data_arr as $key => $value) {
         $processed .= $key . '=' . $value;
-        $processed .= "\r\n";
+        if(($loop) == $total) $processed .= PHP_EOL;
         $loop++;
     }
     $data = $processed;
 }
+
 ?>
 <h3>Editing record "<?php echo $current->ref ?>"</h3>
 <form name="input" action="<?php echo site_url();?>/wp-admin/admin.php?page=cwd-management&view=proc" method="post">
