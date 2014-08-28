@@ -7,13 +7,35 @@
     <p>Thank you for installing! Let's get you on the road to mastering this simple but powerful plugin.</p>
     <p>First things first, lets add some data. It's pretty simple really, just click the <a class="actionbtn" href="<?php echo site_url();?>/wp-admin/admin.php?page=cwd-management&view=add">Add New</a> button on the dashboard. Here you will enter the reference and the data. The "reference" is what uniquely identifies this record, the "data" is what you want to store and retrieve.</p>
     <p>Once you have entered your record and clicked submit you will now see a table on the dashboard displaying all your records. This table gives the reference, the shortcode needed to output the data you have stored and the data that is stored in the record.</p>
+
     <h3>Using the Shortcode</h3>
+
     <code>[cwd ref="$reference"]</code>
     <p>This plugin currently has one shortcode (shown above). This shortcode returns the data of the reference provided.  </p>
     <h4>Example</h4>
     <p>If you have a record with the reference "phone" which has the phone number "07383382938" putting the following shortcode <code>[cwd ref="phone"]</code> in a post or page will output 07383382938 on that page/post</p>
     <p>All shortcodes are generated on the plugin dashboard for your convenience.</p>
+
+    <h4>Retrieving an element of an array</h4>
+    <p>
+        You can use the shortcode to access data that has been stored in an array (currently no support for multidimential access). This is done by passing a second parameter 'key' with the key of the data you wish to retrieve.
+    </p>
+    <code>[cwd ref="$reference" key="$key"]</code>
+    <p>
+        For an example lets say we have a custom data record called 'launch_date' with the data:
+    </p>
+    <ul>
+        <li>year=2014</li>
+        <li>month=08</li>
+        <li>day=15</li>
+    </ul>
+
+    <p>
+        Using <code>[cwd ref="launch_date" key="year"]</code> would output <em>2014</em>.
+    </p>
+
     <h3>Advanced Storage &amp; Use</h3>
+
     <p>CWD can be used in your websites theme to echo or perform php functions.</p>
     <h4>Using CWD Shortcode Outside Of Posts &amp; Pages</h4>
     <p>The built in Wordpress function <a href="http://codex.wordpress.org/Function_Reference/do_shortcode" target="_blank"><code>do_shortcode()</code></a> can be used to return the record's data</p>

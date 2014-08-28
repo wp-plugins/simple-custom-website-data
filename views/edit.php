@@ -13,7 +13,7 @@ if ($this->isJson($data) && !$this->isMulti($data, true))
     $arr_count = count($data_arr);
     foreach ($data_arr as $key => $value) {
         $processed .= $key . '=' . $value;
-        if(($loop) == $total) $processed .= PHP_EOL;
+        if(end($data_arr) != $value) $processed .= PHP_EOL;
         $loop++;
     }
     $data = $processed;

@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom Website Data
 Plugin URI: http://dev.dannyweeks.com/cwd/index.php
-Version: 1.4
+Version: 1.4.1
 Author: Danny Weeks
 Author URI: http://dannyweeks.com/
 Description: Allows user to add custom data to be used as either returned values or as shortcodes
@@ -95,8 +95,9 @@ class CustomWebsiteData
     public function cwd_func($atts){
         extract(shortcode_atts(array(
           'ref' => null,
+          'key' => null,
        ), $atts));
-        return $this->processOutput($ref);
+        return $this->processOutput($ref, $key);
     }
 
     // Views
@@ -286,19 +287,28 @@ class CustomWebsiteData
         }
     }
 
-    public function processOutput($ref = null){
+    public function processOutput($ref = null, $key = null){
         $data = $this->retRecord($ref)->data;
-        if ($this->isJson($data)) {
-            return json_decode($data, true);
+
+        if ($this->isJson($data))
+        {
+            $arr = json_decode($data, true);
+            if(isset($arr[$key]))
+            {
+                return $arr[$key];
+            }
+            return $arr;
         }
         elseif($this->isJson(stripcslashes($data)))
         {
             return json_decode(stripcslashes($data), true);
-        }elseif(!is_null($data)){
-            return $data;
-        }else{
-            return false;
         }
+        elseif(!is_null($data))
+        {
+            return $data;
+        }
+        return false;
+
     }
 
     public function getAll(){
@@ -444,9 +454,9 @@ $cwd = new CustomWebsiteData;
 
 //Advanced Functions
 
-function cwd_getThe($ref = null){
+function cwd_getThe($ref = null, $key = null){
     global $cwd;
-    return $cwd->processOutput($ref);
+    return $cwd->processOutput($ref, $key);
 }
 
 function cwd_updateThe($ref, $data){
