@@ -3,7 +3,7 @@ Contributors: DannyWeeks
 Donate link: http://dannyweeks.com/contact
 Tags: information, data, storage, business details, developer tools, contact, details, phone, email, address, global, info
 Requires at least: 3.5.2
-Tested up to: 3.9
+Tested up to: 3.9.2
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -43,10 +43,12 @@ e.g.
 
 = How do I use my data =
 
-You have three options.
-*   You can place the shortcode generated on any page or post.
-*   Use the Wordpress function `do_shortcode('[cwd ref="yourdataref"]')`
-*   Use the CWD PHP function `cwd_getThe('yourdataref')`
+There are currently three to retrieve your data:
+
+* You can place the shortcode generated on any page or post.
+* Use the Wordpress function `do_shortcode('[cwd ref="yourdataref"]')`
+* Use the CWD PHP function `cwd_getThe('yourdataref')`
+* If you have stored an array and wish to access a specific key use `[cwd ref="my_array" key="the_key"]`
 
 == Screenshots ==
 
@@ -59,6 +61,10 @@ You can find these screenshots in the /assets/ directory of CWD
 5. finished.png         - Example of how that shortcode works.
 
 == Changelog ==
+
+= 1.4.1 =
+
+* Added ability to retrieve array elements using shortcode
 
 = 1.4 =
 
@@ -77,6 +83,7 @@ You can find these screenshots in the /assets/ directory of CWD
 * Minor changes
 
 = 1.3 =
+
 * Added ability to export all records to csv file
 * Added ability to import csv file of records - if a reference already exists it will be skipped during the import process
 * Additional security measures added
@@ -84,15 +91,18 @@ You can find these screenshots in the /assets/ directory of CWD
 * Changed menu logo
 
 = 1.2 =
+
 * Added advanced function `cwd_updateThe()` for writing to a record via PHP
 * Updated user guide to reflect changes
 * CSS change to hide wp footer
 
 = 1.1 =
+
 * Fixed security issues.
 * Updated folder name to 'simple-custom-website-data' and documentation to match.
 
 = 1.0 =
+
 * N/A for version 1.0.
 
 == Upgrade Notice ==
