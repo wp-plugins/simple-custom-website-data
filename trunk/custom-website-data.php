@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom Website Data
 Plugin URI: http://dev.dannyweeks.com/cwd/index.php
-Version: 1.4.1
+Version: 2.0
 Author: Danny Weeks
 Author URI: http://dannyweeks.com/
 Description: Allows user to add custom data to be used as either returned values or as shortcodes
@@ -10,105 +10,117 @@ Description: Allows user to add custom data to be used as either returned values
 
 class CustomWebsiteData
 {
-    // property declaration
-    private $jal_db_version = "1.0";
-    private $tablename = "custom_website_data";
-
     //construct
-    function __construct( ){
-        register_activation_hook(__FILE__, $this->jal_install());
-        //register_uninstall_hook(    __FILE__, $this->uninstall() );
-        add_action( 'admin_menu', array( $this, 'register_my_custom_menu_page') );
-        add_shortcode( 'cwd', array($this, 'cwd_func') );
-        if (is_admin()) {
-            add_action('admin_notices', array( $this, 'showAdminMessages'));
-        }
-        if( !session_id() && function_exists('session_start')){
-            session_start();
-            $_SESSION['cwd_started'] = true;
-        }
+    public function __construct()
+    {
+        define(CWD_VERSION, '2.0');
+        define(CWD_NAMESPACE, 'Cwd\\');
+        define(CWD_ROOT, plugins_url('simple-custom-website-data/'));
+        define(CWD_MENU_SLUG, 'cwd-management');
+        define(CWD_MENU_QUERY_STRING, '?page=' . CWD_MENU_SLUG);
+        define(CWD_URL, site_url() . '/wp-admin/admin.php' . CWD_MENU_QUERY_STRING);
+        define(CWD_STYLES, CWD_ROOT . 'css/');
+        define(CWD_SCRIPTS, CWD_ROOT . 'js/');
+        define(CWD_IMAGES, CWD_ROOT . 'img/');
 
-        if($_GET['export'] == true && $_GET['page'] == 'cwd-management' && is_admin())
+        $this->autoLoadClasses();
+        $this->registerActivationHooks();
+        $this->createMenu();
+        $this->createShortcode();
+        $this->startSession();
+
+        if($_GET['export'] == 'true' && on_cwd() && is_admin())
         {
-            $csv = '';
-            foreach ($this->getAll() as $row) {
-                $csv .=  $row->ref . "," . $row->data . "\n";
-            }
-
-            header("Pragma: public");
-            header("Expires: 0");
-            header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-            header("Cache-Control: private", false);
-            header("Content-Type: application/octet-stream");
-            header("Content-Disposition: attachment; filename=\"cwd-export_" . date("Y-m-d_H-i-s") . ".csv\";" );
-            header("Content-Transfer-Encoding: binary");
-
-            echo $csv;
-            exit;
+            $this->tools->export($this->database->getAll());
         }
 
+        if($_GET['export'] == 'json' && on_cwd() && is_admin())
+        {
+            $this->tools->exportJson($this->database->getAll());
+        }
 
-    }
-
-    protected function newInstallMsg(){
-        if (!get_option('cwd_newmsg')) {
-            $this->showMessage('Thanks for installing Custom Website Data, check out the <a href="' . site_url() . '/wp-admin/admin.php?page=cwd-management&view=user"> User Guide</a> to learn about CWD and get started.');
-            add_option('cwd_newmsg', true);
+        if (on_cwd() && is_admin())
+        {
+            $this->adminConstruct();
         }
     }
 
-    // Create db table when plugin is activated
-    protected function jal_install () {
-        global $wpdb;
-        global $jal_db_version;
-
-        $table_name = $wpdb->prefix . $this->tablename;
-        if($wpdb->get_var("show tables like '$table_name'") != $table_name) {
-
-             $sql = "CREATE TABLE " . $table_name . " (
-                id mediumint(9) NOT NULL AUTO_INCREMENT,
-                ref tinytext NOT NULL,
-                data tinytext NOT NULL,
-                UNIQUE KEY id (id)
-                );";
-
-             require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-             dbDelta($sql);
-
-             add_option("jal_db_version", $this->jal_db_version);
-
-        }
+    public function newInstallMsg()
+    {
+        $this->messages->setMessage('Thanks for installing Custom Website Data, check out the <a href="' . CWD_URL . '&view=user"> User Guide</a> to learn about CWD and get started.');
     }
 
     //menu and admin page
 
-    public function register_my_custom_menu_page(){
-        add_menu_page( 'Custom Website Data', 'Custom Data', 'manage_options', 'cwd-management', array($this, 'cwd_management_page'), plugins_url( ($_GET['page'] !== 'cwd-management')?'simple-custom-website-data/img/cwd.png' : 'simple-custom-website-data/img/active_cwd.png' ), 28 );
+    public function registerCwdMenu()
+    {
+        $icon = (on_cwd())? 'active_cwd.png' : 'cwd.png';
+
+        add_menu_page( 'Custom Website Data', 'Custom Data', 'manage_options', CWD_MENU_SLUG, array($this, 'cwd_management_page'), CWD_IMAGES . $icon, '28.8' );
+
+        add_submenu_page( CWD_MENU_SLUG, 'New Record', 'New Record', 'activate_plugins', CWD_MENU_QUERY_STRING . '&view=add');
+        add_submenu_page( CWD_MENU_SLUG, 'Utility', 'Utility', 'activate_plugins', CWD_MENU_QUERY_STRING . '&view=utility');
     }
 
-    public function cwd_management_page(){
-        require_once 'cwd-admin.php';
+    public function cwd_management_page()
+    {
+        if(get_option('currentCwdVersion', 0) < CWD_VERSION && on_cwd())
+        {
+            update_option( 'currentCwdVersion', CWD_VERSION );
+            $this->utility->redirectToView('whats-new');
+        }
+
+        $this->route();
     }
 
-    //create shortcodes
+    private function route()
+    {
+        switch ($_GET['import'])
+        {
+            case 'true':
+                $this->tools->import();
+                $this->utility->redirectToView();
+                break;
+        }
 
-    public function cwd_func($atts){
-        extract(shortcode_atts(array(
-          'ref' => null,
-          'key' => null,
-       ), $atts));
-        return $this->processOutput($ref, $key);
+        switch ($_GET['view']) {
+            case 'proc_add':
+                $this->requests->add();
+                $this->utility->redirectToView();
+                break;
+
+            case 'edit_proc':
+                $this->requests->edit();
+                $this->utility->redirectToView();
+                break;
+
+            case 'delete_proc':
+                $this->requests->delete();
+                $this->utility->redirectToView();
+                break;
+
+            default:
+                $this->makePage($_GET['view']);
+                break;
+        }
     }
 
-    // Views
+    private function makePage($view)
+    {
+        require 'views/header.php';
+        $this->showView($view);
+        require 'views/sidebar.php';
+        require 'views/footer.php';
+    }
 
     public function showView($view = null){
         switch ($view) {
             case 'dash':
                 require 'views/dash.php';
                 break;
-            case 'delete':
-                require 'views/delete.php';
+
+            case 'whats-new':
+                require 'views/whats-new.php';
                 break;
 
             case 'add':
@@ -119,8 +131,8 @@ class CustomWebsiteData
                 require 'views/edit.php';
                 break;
 
-            case 'proc':
-                require 'proc.php';
+            case 'delete':
+                require 'views/delete.php';
                 break;
 
             case 'user':
@@ -135,12 +147,7 @@ class CustomWebsiteData
                 require 'views/import.php';
                 break;
 
-            case 'import_proc':
-                require 'views/import_proc.php';
-                break;
-
             default:
-                $this->newInstallMsg();
                 require 'views/dash.php';
                 break;
         }
@@ -148,348 +155,89 @@ class CustomWebsiteData
 
     //data manipulation
 
-    public function insertData($ref, $data, $skip_proc = false){
-        global $wpdb;
-
-        if (!$skip_proc) {
-            $data = $this->processData($data);
-        }
-
-        $table_name = $wpdb->prefix . $this->tablename;
-        $wpdb->query(
-            $wpdb->prepare(
-                " INSERT INTO $table_name
-                    ( id, ref, data )
-                    VALUES ( %d, %s, %s )
-                ",
-                         NULL, $ref, $data
-                    )
-                );
-            }
-
-    public function updateRecord($id, $data){
-        global $wpdb;
-        $data = $this->processData($data);
-        $table_name = $wpdb->prefix . $this->tablename;
-        if($this->idExists($id)){
-
-            $up_data = array(
-                            'data'=> $data
-                            );
-
-            $where = array(
-                        'id' => $id
-                        );
-
-            $wpdb->update( $table_name, $up_data, $where, $format = null, $where_format = null );
-        }
-    }
-
-    public function deleteRecord($id){
-        global $wpdb;
-        $table_name = $wpdb->prefix . $this->tablename;
-        $wpdb->query(
-            $wpdb->prepare(
-                "DELETE FROM $table_name
-                 WHERE  id = %d
-                "
-            ,$id)
-                );
-    }
-
-    public function idHandler(){
-        if (isset($_REQUEST['id'])) {
-            return $_REQUEST['id'];
-        }
-        return false;
-
-    }
-
-    //Process Requests
-
-    public function processUserRequest(){
-        $cwd_id = $this->idHandler();
-
-        // Add Record
-        if (isset($_POST['ref']) && isset($_POST['data']) && $_POST['cwdaction'] == 'add') {
-
-            if ( !empty($_POST) && check_admin_referer('cwd_add_action','cwd_add_name') ) {
-
-                $this->insertData($this->xss_filter($_POST['ref']), $this->xss_filter($_POST['data']));
-                $this->setMessage('The record "' . $_POST['ref'] . '" has been added') ;
-            }
-
-        }
-
-        // Delete Record
-
-        elseif($_GET['del'] == 'y' && $cwd_id){
-            if (wp_verify_nonce( $_GET['_del_rec'], 'del_rec-' .  $_GET['id'])) {
-                $this->deleteRecord($this->xss_filter($cwd_id));
-                $this->setMessage('The record has been deleted') ;
-            }
-            else
-            {
-                $this->setMessage('Securty check failed');
-            }
-
-
-        }
-
-        // Edit Record
-        elseif($_POST['edit'] == 'y' && $cwd_id){
-            if (wp_verify_nonce( $_POST['_edit_rec'], 'edit_rec-' .  $_POST['id']))
-            {
-                $this->updateRecord($_POST['id'], $this->xss_filter($_POST['data']));
-                $this->setMessage('The record was updated');
-            }
-            else
-            {
-                $this->setMessage('Securty check failed');
-            }
-
-        }
-    }
-
-
-    // Utility
-
-    public function xss_filter($string)
+    public function insertData($ref, $data, $skip_proc = false)
     {
-        if($this->isJson(stripslashes($string)))
+        if (!$skip_proc)
         {
-            return strip_tags($string);
+            $data = $this->utility->processData($data);
         }
-        return strip_tags(htmlentities($string));
+
+        $this->database->insert($ref, $data);
     }
 
-    public function processData($data){
-        if (is_array($data)) {
-            return json_encode($data);
-        }
-        elseif($this->isJson($data)){
-            return json_decode($data, true);
-        }
-        elseif(strstr($data, "\n") && strstr($data, '=')){
-            $retArr = array();
-            $data = str_replace(array("\r", "\n"), '|', $data);
-            $exploded = explode('|', $data);
-            foreach ($exploded as $entry => $value) {
-                $single_ex = explode('=', $value);
-                if (!empty($single_ex[0])) {
-                    $retArr[$single_ex[0]] = $single_ex[1];
+    private function autoLoadClasses()
+    {
+        $classes = array(
+                    'Database',
+                    'Utility',
+                    'Messages',
+                    array('Output', array ('Database','Utility')),
+                    array('Tools', array('Utility', 'Messages', 'Database')),
+                    array('Requests', array ('Utility', 'Messages', 'Database'))
+                    );
+
+        foreach ($classes as $key => $className)
+        {
+            $args = [];
+
+            if(is_array($className))
+            {
+                $rawArgs = array_pop($className);
+
+                foreach ($rawArgs as $argKey => $arg)
+                {
+                    $argLower = strtolower($arg);
+                    $args[] = &$this->{$argLower};
                 }
+
+                $className = $className[0];
             }
-            return json_encode($retArr);
-        }
-        else{
-            return $data;
-        }
-    }
+            require 'classes/' . $className . '.php';
+            $classLower = strtolower($className);
+            $className = CWD_NAMESPACE . $className;
 
-    public function processOutput($ref = null, $key = null){
-        $data = $this->retRecord($ref)->data;
-
-        if ($this->isJson($data))
-        {
-            $arr = json_decode($data, true);
-            if(isset($arr[$key]))
-            {
-                return $arr[$key];
-            }
-            return $arr;
+            $rf = new ReflectionClass($className);
+            $this->{$classLower} = $rf->newInstanceArgs($args);
         }
-        elseif($this->isJson(stripcslashes($data)))
-        {
-            return json_decode(stripcslashes($data), true);
-        }
-        elseif(!is_null($data))
-        {
-            return $data;
-        }
-        return false;
 
     }
 
-    public function getAll(){
-        global $wpdb;
-        $table_name = $wpdb->prefix . $this->tablename;
-        $row = $wpdb->get_results(
-            $wpdb->prepare(
-            "
-                SELECT *
-                FROM $table_name
-            ", null
-                    )
-            );
-
-        return $row;
-    }
-
-    public function idExists($id){
-        global $wpdb;
-        $table_name = $wpdb->prefix . $this->tablename;
-        $row = $wpdb->get_row(
-            $wpdb->prepare(
-            "
-                SELECT id
-                FROM $table_name
-                WHERE id = %s
-            ",
-            $id
-                    )
-            );
-
-        return $row;
-    }
-
-    public function getRecordIdByRef($ref)
+    private function registerActivationHooks()
     {
-        global $wpdb;
-        $table_name = $wpdb->prefix . $this->tablename;
-        $row = $wpdb->get_row(
-            $wpdb->prepare(
-            "
-                SELECT id
-                FROM $table_name
-                WHERE ref = %s
-            ",
-            $ref
-                    )
-            );
-        return $row->id;
+        register_activation_hook(__FILE__, array($this->database, 'createTable'));
+
+        register_activation_hook(__FILE__, array($this, 'newInstallMsg'));
     }
 
-    public function retRecord($ref){
-        global $wpdb;
-        $table_name = $wpdb->prefix . $this->tablename;
-        $row = $wpdb->get_row(
-            $wpdb->prepare(
-            "
-                SELECT data
-                FROM $table_name
-                WHERE ref = %s
-            ",
-            $ref
-                    )
-            );
-
-        return (count($row) > 0)? $row : false;
+    private function createMenu()
+    {
+        add_action( 'admin_menu', array( $this, 'registerCwdMenu') );
     }
 
-    public function isJson($string) {
-        if (!is_numeric($string)) {
-            json_decode($string);
-            return (json_last_error() == JSON_ERROR_NONE);
-        }
-        return false;
+    private function createShortcode()
+    {
+        add_shortcode( 'cwd', array($this->output, 'shortcode'));
     }
 
-    public function isMulti($a, $json = null) {
-        if($json == true)
+    private function adminConstruct()
+    {
+        add_action('admin_notices', array( $this->messages, 'showAdminMessages'));
+        wp_enqueue_style('cwdStyles', CWD_STYLES . 'cwd.css', null, CWD_VERSION);
+        wp_register_script('cwdScript', CWD_SCRIPTS . 'cwd.js', array('jquery'), CWD_VERSION);
+        wp_enqueue_script('cwdScript');
+    }
+
+    private function startSession()
+    {
+        if( !session_id() && function_exists('session_start'))
         {
-            $a = cwd_objectToArray(json_decode($a));
-        }
-        $rv = array_filter($a,'is_array');
-        if(count($rv)>0) return true;
-        return false;
-    }
-
-    public function getById($id){
-        global $wpdb;
-        $table_name = $wpdb->prefix . $this->tablename;
-        $row = $wpdb->get_row(
-            $wpdb->prepare(
-            "
-                SELECT *
-                FROM $table_name
-                WHERE id = %s
-            ",
-            $id
-                    )
-            );
-
-        return $row;
-    }
-
-    //UI
-
-    public function showMessage($message, $errormsg = false)
-    {
-        if ($errormsg) {
-            echo '<div id="message" class="error">';
-        }
-        else {
-            echo '<div id="message" class="updated fade">';
-        }
-
-        echo '<p><strong>' . $message . '</strong></p></div>';
-    }
-
-    public function showAdminMessages()
-    {
-        if ($_SESSION['cwd_message']) {
-            $this->showMessage($_SESSION['cwd_message']);
-            $_SESSION['cwd_message'] = false;
+            session_start();
+            $_SESSION['cwd_started'] = true;
         }
     }
-
-    public function setMessage($message = null){
-        if ($_SESSION['cwd_started']) {
-            $_SESSION['cwd_message'] = $message;
-        }
-    }
-
-    //Uninstall
-
-    public function uninstall(){
-        delete_option('cwd_newmsg');
-    }
-
 }
+
+include('cwd-functions.php');
 
 //init class
 $cwd = new CustomWebsiteData;
-
-
-//Advanced Functions
-
-function cwd_getThe($ref = null, $key = null){
-    global $cwd;
-    return $cwd->processOutput($ref, $key);
-}
-
-function cwd_updateThe($ref, $data){
-    global $cwd;
-    if ($cwd->retRecord($ref)) {
-
-        if (is_array($data)) {
-            $filtered_data = array();
-            foreach ($data as $key => $value) {
-                $filtered_data[$key] = $cwd->xss_filter($value);
-            }
-            $cwd->updateRecord($cwd->getRecordIdByRef($ref), $filtered_data);
-            return true;
-        }
-        elseif(is_string($data) || is_numeric($data)){
-            $cwd->updateRecord($cwd->getRecordIdByRef($ref), $data);
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-
-    }
-    else
-    {
-        return false;
-    }
-
-}
-
-function cwd_objectToArray($obj) {
-  if(!is_array($obj) && !is_object($obj)) return $obj;
-  if(is_object($obj)) $obj = get_object_vars($obj);
-  return array_map(__FUNCTION__, $obj);
-}
