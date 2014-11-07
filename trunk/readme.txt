@@ -62,6 +62,18 @@ You can find these screenshots in the /assets/ directory of CWD
 
 == Changelog ==
 
+= 2.0 =
+
+* Out with the 90's style; in with the modern Wordpress look.
+
+* Added sub menu.
+
+* Arrays are displayed in a much cleaner fashion on the dashboard.
+
+* Entire code base refactored to be cleaner, more readable and more efficient.
+
+* Automatically select the shortcode from the dashboard by clicking it.
+
 = 1.4.1 =
 
 * Added ability to retrieve array elements using shortcode
