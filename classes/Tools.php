@@ -44,7 +44,14 @@ class Tools{
             }
         }
 
-        $json = json_encode($records, JSON_PRETTY_PRINT);
+        if(defined('JSON_PRETTY_PRINT'))
+        {
+            $json = json_encode($records, JSON_PRETTY_PRINT);
+        }
+        else
+        {
+            $json = json_encode($records);
+        }
 
         header("Content-disposition: attachment; filename=\"cwd-export_" . date("Y-m-d_H-i-s") . ".json\";");
         header('Content-type: application/json');
