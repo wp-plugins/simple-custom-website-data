@@ -178,7 +178,7 @@ class CustomWebsiteData
 
         foreach ($classes as $key => $className)
         {
-            $args = [];
+            $args = array();
 
             if(is_array($className))
             {
