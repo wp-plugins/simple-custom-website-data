@@ -62,6 +62,10 @@ You can find these screenshots in the /assets/ directory of CWD
 
 == Changelog ==
 
+= 2.0.1 =
+
+* Fixed notices shown with WP_Debug turned on.
+
 = 2.0 =
 
 * Out with the 90's style; in with the modern Wordpress look.

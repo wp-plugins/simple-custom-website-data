@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom Website Data
 Plugin URI: http://dev.dannyweeks.com/cwd/index.php
-Version: 2.0
+Version: 2.0.1
 Author: Danny Weeks
 Author URI: http://dannyweeks.com/
 Description: Allows user to add custom data to be used as either returned values or as shortcodes
@@ -13,15 +13,15 @@ class CustomWebsiteData
     //construct
     public function __construct()
     {
-        define(CWD_VERSION, '2.0');
-        define(CWD_NAMESPACE, 'Cwd\\');
-        define(CWD_ROOT, plugins_url('simple-custom-website-data/'));
-        define(CWD_MENU_SLUG, 'cwd-management');
-        define(CWD_MENU_QUERY_STRING, '?page=' . CWD_MENU_SLUG);
-        define(CWD_URL, site_url() . '/wp-admin/admin.php' . CWD_MENU_QUERY_STRING);
-        define(CWD_STYLES, CWD_ROOT . 'css/');
-        define(CWD_SCRIPTS, CWD_ROOT . 'js/');
-        define(CWD_IMAGES, CWD_ROOT . 'img/');
+        define('CWD_VERSION', '2.0.1');
+        define('CWD_NAMESPACE', 'Cwd\\');
+        define('CWD_ROOT', plugins_url('simple-custom-website-data/'));
+        define('CWD_MENU_SLUG', 'cwd-management');
+        define('CWD_MENU_QUERY_STRING', '?page=' . CWD_MENU_SLUG);
+        define('CWD_URL', site_url() . '/wp-admin/admin.php' . CWD_MENU_QUERY_STRING);
+        define('CWD_STYLES', CWD_ROOT . 'css/');
+        define('CWD_SCRIPTS', CWD_ROOT . 'js/');
+        define('CWD_IMAGES', CWD_ROOT . 'img/');
 
         $this->autoLoadClasses();
         $this->registerActivationHooks();
@@ -29,12 +29,12 @@ class CustomWebsiteData
         $this->createShortcode();
         $this->startSession();
 
-        if($_GET['export'] == 'true' && on_cwd() && is_admin())
+        if(isset($_GET['export']) && $_GET['export'] == 'true' && on_cwd() && is_admin())
         {
             $this->tools->export($this->database->getAll());
         }
 
-        if($_GET['export'] == 'json' && on_cwd() && is_admin())
+        if(isset($_GET['export']) && $_GET['export'] == 'json' && on_cwd() && is_admin())
         {
             $this->tools->exportJson($this->database->getAll());
         }
@@ -75,15 +75,17 @@ class CustomWebsiteData
 
     private function route()
     {
-        switch ($_GET['import'])
+        $imp = (isset($_GET['import'])) ? $_GET['import'] : '';
+
+        switch ($imp)
         {
             case 'true':
                 $this->tools->import();
                 $this->utility->redirectToView();
                 break;
         }
-
-        switch ($_GET['view']) {
+        $view = (isset($_GET['view'])) ? $_GET['view'] : '';
+        switch ($view) {
             case 'proc_add':
                 $this->requests->add();
                 $this->utility->redirectToView();
@@ -100,7 +102,7 @@ class CustomWebsiteData
                 break;
 
             default:
-                $this->makePage($_GET['view']);
+                $this->makePage($view);
                 break;
         }
     }
@@ -222,9 +224,15 @@ class CustomWebsiteData
     private function adminConstruct()
     {
         add_action('admin_notices', array( $this->messages, 'showAdminMessages'));
-        wp_enqueue_style('cwdStyles', CWD_STYLES . 'cwd.css', null, CWD_VERSION);
+        add_action('admin_enqueue_scripts', array( $this, 'adminScripts'));
+
+    }
+
+    public function adminScripts()
+    {
         wp_register_script('cwdScript', CWD_SCRIPTS . 'cwd.js', array('jquery'), CWD_VERSION);
         wp_enqueue_script('cwdScript');
+        wp_enqueue_style('cwdStyles', CWD_STYLES . 'cwd.css', null, CWD_VERSION);
     }
 
     private function startSession()

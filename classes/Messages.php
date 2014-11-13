@@ -18,7 +18,7 @@ class Messages {
 
     public function showAdminMessages()
     {
-        if ($_SESSION['cwd_message'])
+        if (isset($_SESSION['cwd_message']) && !empty($_SESSION['cwd_message']))
         {
             $this->showMessage($_SESSION['cwd_message']);
             $_SESSION['cwd_message'] = false;
