@@ -63,8 +63,15 @@ class Utility{
 
     public function redirectToView($view = null)
     {
-        header('Location: ' . CWD_URL . '&view=' . $view);
+        if(!headers_sent())
+        {
+            header('Location: ' . CWD_URL . '&view=' . $view);
+            exit;
+        }
+
+        echo '<meta http-equiv="refresh" content="0;URL=\'' . CWD_URL . '&view=' . $view . '\'" />';
         exit;
+
     }
 
     public function objectToArray($obj)
