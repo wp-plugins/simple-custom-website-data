@@ -39,13 +39,10 @@ function on_cwd()
 
 // debuging use only
 
-if (!function_exists('dd'))
+function cwddd($var)
 {
-    function dd($var)
-    {
-        echo "<pre>";
-        var_dump($var);
-        echo "</pre>";
-        die();
-    }
+    echo "<pre>";
+    var_dump($var);
+    echo "</pre>";
+    die();
 }

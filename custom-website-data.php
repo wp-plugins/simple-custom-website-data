@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom Website Data
 Plugin URI: http://dev.dannyweeks.com/cwd/index.php
-Version: 2.0.1
+Version: 2.0.2
 Author: Danny Weeks
 Author URI: http://dannyweeks.com/
 Description: Allows user to add custom data to be used as either returned values or as shortcodes
@@ -13,7 +13,7 @@ class CustomWebsiteData
     //construct
     public function __construct()
     {
-        define('CWD_VERSION', '2.0.1');
+        define('CWD_VERSION', '2.0.2');
         define('CWD_NAMESPACE', 'Cwd\\');
         define('CWD_ROOT', plugins_url('simple-custom-website-data/'));
         define('CWD_MENU_SLUG', 'cwd-management');

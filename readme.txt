@@ -3,7 +3,7 @@ Contributors: DannyWeeks
 Donate link: http://dannyweeks.com/contact
 Tags: information, data, storage, business details, developer tools, contact, details, phone, email, address, global, info
 Requires at least: 3.5.2
-Tested up to: 4.0
+Tested up to: 4.1
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -52,15 +52,17 @@ There are currently three to retrieve your data:
 
 == Screenshots ==
 
-You can find these screenshots in the /assets/ directory of CWD
-
-1. post-install.png     - This screenshot shows the plugin dashboard after installing CWD.
-2. adding-data.png      - This is how data is added.
-3. added.png            - This is how the dashboard looks after adding a new record.
-4. using-shortcode.png  - Example of how shortcode can be used.
-5. finished.png         - Example of how that shortcode works.
+1. Dashboard showing all records, their values and shortcodes.
+2. Adding a record couldn't be easier.
+3. Importing and backing up is simple with the Utility feature.
 
 == Changelog ==
+
+= 2.0.2 =
+
+* Tested up to Wordpress 4.1.
+* Added screenshots to Wordpress.org.
+* Fixed issue with debug function conflicting with theme debug function.
 
 = 2.0.1 =
 
@@ -122,6 +124,9 @@ You can find these screenshots in the /assets/ directory of CWD
 * N/A for version 1.0.
 
 == Upgrade Notice ==
+
+= 2.0.2 =
+Tested upto Wordpress 4.1. If you have had issues updating this plugin in the past briefly change your theme, update the plugin and re-activate your theme.
 
 = 1.1 =
 N/A for version 1.1.
