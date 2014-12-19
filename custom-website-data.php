@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom Website Data
 Plugin URI: http://dev.dannyweeks.com/cwd/index.php
-Version: 2.0.2
+Version: 2.0.3
 Author: Danny Weeks
 Author URI: http://dannyweeks.com/
 Description: Allows user to add custom data to be used as either returned values or as shortcodes
@@ -10,10 +10,9 @@ Description: Allows user to add custom data to be used as either returned values
 
 class CustomWebsiteData
 {
-    //construct
     public function __construct()
     {
-        define('CWD_VERSION', '2.0.2');
+        define('CWD_VERSION', '2.0.3');
         define('CWD_NAMESPACE', 'Cwd\\');
         define('CWD_ROOT', plugins_url('simple-custom-website-data/'));
         define('CWD_MENU_SLUG', 'cwd-management');
@@ -64,7 +63,7 @@ class CustomWebsiteData
 
     public function cwd_management_page()
     {
-        if(get_option('currentCwdVersion', 0) < CWD_VERSION && on_cwd())
+        if(version_compare(get_option('currentCwdVersion', 0), CWD_VERSION, "<") && on_cwd())
         {
             update_option( 'currentCwdVersion', CWD_VERSION );
             $this->utility->redirectToView('whats-new');
@@ -173,9 +172,10 @@ class CustomWebsiteData
                     'Database',
                     'Utility',
                     'Messages',
+                    'ReadMe',
                     array('Output', array ('Database','Utility')),
                     array('Tools', array('Utility', 'Messages', 'Database')),
-                    array('Requests', array ('Utility', 'Messages', 'Database'))
+                    array('Requests', array ('Utility', 'Messages', 'Database')),
                     );
 
         foreach ($classes as $key => $className)
@@ -198,10 +198,16 @@ class CustomWebsiteData
             $classLower = strtolower($className);
             $className = CWD_NAMESPACE . $className;
 
-            $rf = new ReflectionClass($className);
-            $this->{$classLower} = $rf->newInstanceArgs($args);
+            if(!method_exists($className, '__construct'))
+            {
+                $this->{$classLower} = new $className;
+            }
+            else
+            {
+                $rf = new ReflectionClass($className);
+                $this->{$classLower} = $rf->newInstanceArgs($args);
+            }
         }
-
     }
 
     private function registerActivationHooks()

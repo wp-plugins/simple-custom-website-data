@@ -1,22 +1,22 @@
 <h3 class="page-title">What's new in version <?php echo CWD_VERSION ?></h3>
 
-<ul class="ul-list">
-    <li>
-        Out with the 90's style; in with the modern Wordpress look.
-    </li>
-    <li>
-        Added sub menu.
-    </li>
-    <li>
-        Arrays are displayed in a much cleaner fashion on the dashboard.
-    </li>
-    <li>
-        Entire code base refactored to be cleaner, more readable and more efficient.
-    </li>
-    <li>
-        Automatically select the shortcode from the dashboard by clicking it.
-    </li>
-</ul>
+<?php
+global $cwd;
+try
+{
+    $changes = $cwd->readme
+                    ->init()
+                    ->getSection('Changelog')
+                    ->getSubSection(CWD_VERSION)
+                    ->md('content');
+    $changes = str_replace('<ul>', '<ul class="ul-list">', $changes);
+    echo $changes;
+}
+catch (Exception $e)
+{
+    echo "<em>Couldn't find any entries in the changelog for this version</em>";
+}
+?>
 
 <br>
 <br>

@@ -58,6 +58,11 @@ There are currently three to retrieve your data:
 
 == Changelog ==
 
+= 2.0.3 =
+
+* 'What's New' section automatically populates using readme.txt.
+* Fixed bug where in some cases a fatal error occurs due to the reflection class [reported via support forum](https://wordpress.org/support/topic/error-activating-plugin-16).
+
 = 2.0.2 =
 
 * Tested up to Wordpress 4.1.
