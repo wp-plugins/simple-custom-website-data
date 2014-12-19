@@ -1,4 +1,4 @@
-<?php namespace Cwd\Readme;
+<?php namespace Cwd\ReadMe;
 
 class Section extends BaseSection{
 

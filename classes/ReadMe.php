@@ -20,9 +20,9 @@ class ReadMe{
             throw new \Exception('Readme file not found: "' . $this->readMePath .'"');
         }
 
-        require 'Readme/BaseSection.php';
-        require 'Readme/Section.php';
-        require 'Readme/SubSection.php';
+        require 'ReadMe/BaseSection.php';
+        require 'ReadMe/Section.php';
+        require 'ReadMe/SubSection.php';
         require 'Helpers/Markdown.php';
 
         return $this;
@@ -44,7 +44,7 @@ class ReadMe{
             return false;
         }
         $rawSection = $rawSections[0];
-        $section = new Readme\Section;
+        $section = new ReadMe\Section;
         $section->title = strtolower(preg_replace("/\s/", '_' , $rawSection[1]));
         $section->raw = htmlentities(trim($rawSection[2]));
         return $section;
@@ -57,7 +57,7 @@ class ReadMe{
 
         foreach($rawSections as $rawSection)
         {
-            $section = new Readme\Section;
+            $section = new ReadMe\Section;
             $title = $this->headingKey($rawSection[1]);
             $section->title = htmlentities($title);
             $section->raw = htmlentities(trim($rawSection[2]));
@@ -72,7 +72,7 @@ class ReadMe{
                 $sub['title'] = htmlentities($rawSubSection[1]);
                 $sub['content'] = htmlentities(trim($rawSubSection[2]));
 
-                $subTitles[$rawSubSection[1]] = new Readme\SubSection($sub);
+                $subTitles[$rawSubSection[1]] = new ReadMe\SubSection($sub);
             }
 
             $section->subtitles = $subTitles;
