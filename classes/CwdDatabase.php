@@ -1,6 +1,6 @@
-<?php namespace Cwd;
+<?php
 
-class Database {
+class CwdDatabase {
     protected $table_name = 'custom_website_data';
 
     public function __construct()

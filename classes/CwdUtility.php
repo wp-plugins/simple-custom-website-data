@@ -1,6 +1,6 @@
-<?php namespace Cwd;
+<?php
 
-class Utility{
+class CwdUtility{
 
     public function xssFilter($string)
     {

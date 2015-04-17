@@ -1,6 +1,6 @@
-<?php namespace Cwd\ReadMe;
+<?php
 
-class Section extends BaseSection{
+class CwdSection extends CwdBaseSection{
 
     public function getSubSection($subSection)
     {
@@ -14,7 +14,7 @@ class Section extends BaseSection{
         $data = array();
         $data['title'] = htmlentities($rawSubSection[1]);
         $data['content'] = htmlentities(trim($rawSubSection[2]));
-        $subSection = new SubSection($data);
+        $subSection = new CwdSubSection($data);
 
         return $subSection;
     }

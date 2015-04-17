@@ -1,6 +1,6 @@
-<?php namespace Cwd;
+<?php
 
-class Output{
+class CwdOutput{
 
     public function __construct(&$database, &$utility)
     {

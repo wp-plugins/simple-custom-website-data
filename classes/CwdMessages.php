@@ -1,6 +1,6 @@
-<?php namespace Cwd;
+<?php
 
-class Messages {
+class CwdMessages {
 
     public function showMessage($message, $errormsg = false)
     {

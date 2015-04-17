@@ -1,6 +1,6 @@
-<?php namespace Cwd;
+<?php
 
-class ReadMe{
+class CwdReadMe{
 
     public $sections = array();
 
@@ -20,10 +20,10 @@ class ReadMe{
             throw new \Exception('Readme file not found: "' . $this->readMePath .'"');
         }
 
-        require 'ReadMe/BaseSection.php';
-        require 'ReadMe/Section.php';
-        require 'ReadMe/SubSection.php';
-        require 'Helpers/Markdown.php';
+        require 'ReadMe/CwdBaseSection.php';
+        require 'ReadMe/CwdSection.php';
+        require 'ReadMe/CwdSubSection.php';
+        require 'Helpers/CwdMarkdown.php';
 
         return $this;
     }
@@ -44,7 +44,7 @@ class ReadMe{
             return false;
         }
         $rawSection = $rawSections[0];
-        $section = new ReadMe\Section;
+        $section = new CwdSection;
         $section->title = strtolower(preg_replace("/\s/", '_' , $rawSection[1]));
         $section->raw = htmlentities(trim($rawSection[2]));
         return $section;
@@ -57,7 +57,7 @@ class ReadMe{
 
         foreach($rawSections as $rawSection)
         {
-            $section = new ReadMe\Section;
+            $section = new CwdSection;
             $title = $this->headingKey($rawSection[1]);
             $section->title = htmlentities($title);
             $section->raw = htmlentities(trim($rawSection[2]));
@@ -72,7 +72,7 @@ class ReadMe{
                 $sub['title'] = htmlentities($rawSubSection[1]);
                 $sub['content'] = htmlentities(trim($rawSubSection[2]));
 
-                $subTitles[$rawSubSection[1]] = new ReadMe\SubSection($sub);
+                $subTitles[$rawSubSection[1]] = new CwdSubSection($sub);
             }
 
             $section->subtitles = $subTitles;

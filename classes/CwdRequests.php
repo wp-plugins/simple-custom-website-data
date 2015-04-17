@@ -1,6 +1,6 @@
-<?php namespace Cwd;
+<?php
 
-class Requests{
+class CwdRequests{
 
     public function __construct(&$utility, &$messages, &$database)
     {

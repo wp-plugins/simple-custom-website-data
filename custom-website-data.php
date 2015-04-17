@@ -2,7 +2,7 @@
 /*
 Plugin Name: Custom Website Data
 Plugin URI: http://dev.dannyweeks.com/cwd/index.php
-Version: 2.0.3
+Version: 2.1
 Author: Danny Weeks
 Author URI: http://dannyweeks.com/
 Description: Allows user to add custom data to be used as either returned values or as shortcodes
@@ -12,7 +12,7 @@ class CustomWebsiteData
 {
     public function __construct()
     {
-        define('CWD_VERSION', '2.0.3');
+        define('CWD_VERSION', '2.1');
         define('CWD_NAMESPACE', 'Cwd\\');
         define('CWD_ROOT', plugins_url('simple-custom-website-data/'));
         define('CWD_MENU_SLUG', 'cwd-management');
@@ -169,16 +169,16 @@ class CustomWebsiteData
     private function autoLoadClasses()
     {
         $classes = array(
-                    'Database',
-                    'Utility',
-                    'Messages',
-                    'ReadMe',
-                    array('Output', array ('Database','Utility')),
-                    array('Tools', array('Utility', 'Messages', 'Database')),
-                    array('Requests', array ('Utility', 'Messages', 'Database')),
+                    'CwdDatabase',
+                    'CwdUtility',
+                    'CwdMessages',
+                    'CwdReadMe',
+                    array('CwdOutput', array ('CwdDatabase','CwdUtility')),
+                    array('CwdTools', array('CwdUtility', 'CwdMessages', 'CwdDatabase')),
+                    array('CwdRequests', array ('CwdUtility', 'CwdMessages', 'CwdDatabase')),
                     );
 
-        foreach ($classes as $key => $className)
+        foreach ($classes as $className)
         {
             $args = array();
 
@@ -186,19 +186,20 @@ class CustomWebsiteData
             {
                 $rawArgs = array_pop($className);
 
-                foreach ($rawArgs as $argKey => $arg)
+                foreach ($rawArgs as $arg)
                 {
-                    $argLower = strtolower($arg);
+
+                    $argLower = substr(strtolower($arg), 3);
                     $args[] = &$this->{$argLower};
                 }
 
                 $className = $className[0];
             }
-            require 'classes/' . $className . '.php';
-            $classLower = strtolower($className);
-            $className = CWD_NAMESPACE . $className;
 
-            if(!method_exists($className, '__construct'))
+            require 'classes/' . $className . '.php';
+            $classLower = substr(strtolower($className), 3);
+
+            if( ! method_exists($className, '__construct'))
             {
                 $this->{$classLower} = new $className;
             }

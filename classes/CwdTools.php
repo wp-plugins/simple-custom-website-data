@@ -1,6 +1,6 @@
-<?php namespace Cwd;
+<?php
 
-class Tools{
+class CwdTools{
 
     public function __construct(&$utility, &$messages, &$database)
     {
@@ -177,6 +177,7 @@ class Tools{
                 $this->importCSV();
                 break;
 
+            case 'application/octet-stream':
             case 'application/json':
                 $this->importJson();
                 break;

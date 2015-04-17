@@ -1,6 +1,6 @@
-<?php namespace Cwd\ReadMe;
+<?php
 
-class SubSection extends BaseSection{
+class CwdSubSection extends CwdBaseSection{
 
     public function __construct(array $data)
     {

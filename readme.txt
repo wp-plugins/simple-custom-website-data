@@ -58,6 +58,13 @@ There are currently three to retrieve your data:
 
 == Changelog ==
 
+= 2.1 =
+
+* Tested up to Wordpress 4.2
+* Removed use of Namespaces throughout CWD. Should now be compatible with PHP 5.2> - Thanks [miwalter](https://wordpress.org/support/topic/namespace-problem)
+* Fixed issue with being unable to import some json files - Thanks Oscar for contacting me regarding this issue.
+* Changed markdown parser to [Slimdown](https://gist.github.com/jbroadway/2836900#file-slimdown-php) to avoid issues with namespacing in Markdown
+
 = 2.0.3 =
 
 * 'What's New' section automatically populates using readme.txt.

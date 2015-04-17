@@ -1,6 +1,6 @@
-<?php namespace Cwd\ReadMe;
+<?php
 
-abstract class BaseSection{
+abstract class CwdBaseSection{
 
     public function md($varName)
     {
@@ -8,7 +8,7 @@ abstract class BaseSection{
         {
             throw new \Exception("Property name provided doesn't exist");
         }
-        return (new \Michelf\Markdown)->transform($this->{$varName});
+        return CwdSlimdown::render(htmlspecialchars_decode($this->{$varName}));
     }
 
 }
